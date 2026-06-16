@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Para Ti ❤️</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+
+    body{
+      overflow:hidden;
+      font-family:'Poppins',sans-serif;
+      min-height:100vh;
+      background:#000;
+    }
+
+    .background{
+      position:fixed;
+      inset:0;
+      background:url('kevin_bell.jpeg') center/cover fixed no-repeat;
+      z-index:0;
+      animation:zoom 20s ease-in-out infinite alternate;
+    }
+
+    .overlay{
+      position:fixed;
+      inset:0;
+      background:linear-gradient(rgba(0,0,0,.45), rgba(20,0,15,.7));
+      backdrop-filter: blur(2px);
+      z-index:1;
+      pointer-events:none;
+    }
+
+    .content{
+      position:relative;
+      z-index:2;
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      text-align:center;
+      padding:2rem;
+      color:white;
+      pointer-events:auto;
+    }
+
+    h1{
+      font-family:'Playfair Display',serif;
+      font-size:clamp(2rem,6vw,4.5rem);
+      line-height:1.3;
+      text-shadow:0 0 25px rgba(255,182,193,.7);
+      margin-bottom:1rem;
+    }
+
+    .subtitle{
+      font-size:1.1rem;
+      color:#ffd9e6;
+      letter-spacing:2px;
+      margin-bottom:2rem;
+      max-width:900px;
+    }
+
+    .music-btn{
+      padding:14px 25px;
+      border:none;
+      border-radius:50px;
+      background:rgba(255,192,203,.18);
+      color:white;
+      font-size:1rem;
+      cursor:pointer;
+      backdrop-filter:blur(10px);
+      transition:.4s;
+      z-index:3;
+    }
+
+    .music-btn:hover{
+      transform:scale(1.05);
+    }
+
+    .sparkles{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:1;
+    }
+
+    .sparkles span{
+      position:absolute;
+      display:block;
+      width:4px;
+      height:4px;
+      background:white;
+      border-radius:50%;
+      animation:sparkle 8s linear infinite;
+      opacity:.8;
+    }
+
+    @keyframes zoom{
+      from{transform:scale(1);}
+      to{transform:scale(1.15);}
+    }
+
+    @keyframes sparkle{
+      0%{transform:translateY(100vh);opacity:0;}
+      20%{opacity:1;}
+      100%{transform:translateY(-100px);opacity:0;}
+    }
+  </style>
+</head>
+<body>
+  <div class="background"></div>
+  <div class="overlay"></div>
+
+  <div class="sparkles">
+    <span style="left:10%;animation-delay:0s;"></span>
+    <span style="left:20%;animation-delay:2s;"></span>
+    <span style="left:35%;animation-delay:4s;"></span>
+    <span style="left:50%;animation-delay:1s;"></span>
+    <span style="left:70%;animation-delay:5s;"></span>
+    <span style="left:85%;animation-delay:3s;"></span>
+  </div>
+
+  <div class="content">
+    <h1>TUS OJOS SON LA MAGIA CON LA QUE ENTRASTE EN MI CORAZÓN<br>FELIZ CUMPLEAÑOS MI PEDACITO DE CIELO ❤️</h1>
+    <div class="subtitle">Siempre tú, siempre nosotros.</div>
+    <button class="music-btn" id="musicButton" aria-pressed="false" aria-label="Reproducir música">
+      <span id="musicIcon">🎵</span> <span id="musicLabel">Reproducir Música</span>
+    </button>
+  </div>
+
+  <audio id="music" playsinline preload="auto" style="display:none;">
+    <source src="momento.mp3" type="audio/mpeg">
+    Tu navegador no soporta audio.
+  </audio>
+
+  <div id="audioFallback" style="display:none;margin-top:1rem;z-index:3;">
+    <div style="color:#ffd9e6;margin-bottom:.5rem;">Si la reproducción automática falla, usa el reproductor o descarga el archivo:</div>
+    <audio id="musicFallback" controls preload="none">
+      <source src="momento.mp3" type="audio/mpeg">
+      Tu navegador no soporta audio.
+    </audio>
+    <div style="margin-top:.5rem;"><a href="momento.mp3" download style="color:#ffd9e6;">Descargar audio</a></div>
+  </div>
+
+  <script>
+    const button = document.getElementById("musicButton");
+    const music = document.getElementById("music");
+    const fallback = document.getElementById("audioFallback");
+    const icon = document.getElementById("musicIcon");
+    const label = document.getElementById("musicLabel");
+    let isPlaying = false;
+
+    function updateButton() {
+      if (isPlaying) {
+        icon.textContent = '⏸️';
+        label.textContent = 'Pausar Música';
+        button.setAttribute('aria-pressed', 'true');
+      } else {
+        icon.textContent = '🎵';
+        label.textContent = 'Reproducir Música';
+        button.setAttribute('aria-pressed', 'false');
+      }
+    }
+
+    function toggleMusic() {
+      if (!isPlaying) {
+        music.play().then(() => {
+          isPlaying = true;
+          music.controls = false;
+          music.style.display = 'none';
+          fallback.style.display = 'none';
+          updateButton();
+        }).catch((err) => {
+          console.warn('Reproducción fallida:', err);
+          // Mostrar fallback con controles para que el usuario inicie manualmente
+          fallback.style.display = 'block';
+          music.style.display = 'none';
+          updateButton();
+        });
+      } else {
+        music.pause();
+        isPlaying = false;
+        updateButton();
+      }
+    }
+
+    // Usar listener en vez de onclick inline
+    button.addEventListener('click', toggleMusic);
+
+    music.addEventListener('play', () => {
+      isPlaying = true;
+      music.controls = false;
+      music.style.display = 'none';
+      fallback.style.display = 'none';
+      updateButton();
+    });
+
+    music.addEventListener('pause', () => {
+      isPlaying = false;
+      updateButton();
+    });
+
+    // Si el navegador requiere interacción por separado, mostrar fallback tras intento de carga fallido
+    music.addEventListener('error', () => {
+      fallback.style.display = 'block';
+    });
+
+    updateButton();
+  </script>
+</body>
+</html>
